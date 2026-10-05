@@ -47,6 +47,10 @@ void _phone(WidgetTester tester) {
   tester.view.physicalSize = const Size(1080, 2340);
   tester.view.devicePixelRatio = 3;
   addTearDown(tester.view.reset);
+  // Gün doğumu sahnesindeki sürekli animasyonları kapat (pumpAndSettle için).
+  tester.platformDispatcher.accessibilityFeaturesTestValue =
+      const FakeAccessibilityFeatures(disableAnimations: true);
+  addTearDown(tester.platformDispatcher.clearAccessibilityFeaturesTestValue);
 }
 
 void main() {

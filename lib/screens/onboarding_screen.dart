@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../services/permissions.dart';
 import '../services/services.dart';
 import '../theme.dart';
+import '../widgets/sunrise_background.dart';
 
 /// İlk açılışta: isim, nasıl çalıştığı ve izinler.
 class OnboardingScreen extends StatefulWidget {
@@ -48,8 +49,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   Widget build(BuildContext context) {
     final text = Theme.of(context).textTheme;
     return Scaffold(
-      body: Container(
-        decoration: BoxDecoration(gradient: dawnGradient(0.35)),
+      body: SunriseBackground(
+        progress: 0.3,
         child: SafeArea(
           child: ListView(
             padding: const EdgeInsets.all(24),

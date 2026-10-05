@@ -27,16 +27,3 @@ ThemeData buildTheme(Brightness brightness) {
     ),
   );
 }
-
-/// Uyandırma ekranında gece → gündoğumu geçişi.
-LinearGradient dawnGradient(double t) {
-  final top = Color.lerp(nightIndigo, const Color(0xFF3A6EA5), t)!;
-  final mid = Color.lerp(dawnPurple, const Color(0xFFFF9E6D), t)!;
-  final bottom = Color.lerp(sunriseOrange, sunriseGold, t)!;
-  return LinearGradient(
-    begin: Alignment.topCenter,
-    end: Alignment.bottomCenter,
-    colors: [top, mid, bottom],
-    stops: const [0, 0.6, 1],
-  );
-}

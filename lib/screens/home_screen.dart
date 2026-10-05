@@ -8,6 +8,7 @@ import '../models/wake_alarm.dart';
 import '../services/permissions.dart';
 import '../services/services.dart';
 import '../theme.dart';
+import '../widgets/sunrise_background.dart';
 import 'alarm_edit_screen.dart';
 import 'routine_edit_screen.dart';
 import 'settings_screen.dart';
@@ -188,46 +189,48 @@ class _HeroCard extends StatelessWidget {
         : now.hour < 18
         ? 'İyi günler'
         : 'İyi akşamlar';
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        gradient: dawnGradient(0.4),
-        borderRadius: BorderRadius.circular(24),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            name.isEmpty ? '$hello!' : '$hello, $name!',
-            style: text.titleLarge?.copyWith(color: Colors.white),
-          ),
-          const SizedBox(height: 12),
-          if (next == null)
-            Text(
-              'Kurulu alarm yok',
-              style: text.headlineSmall?.copyWith(color: Colors.white),
-            )
-          else ...[
-            Text(
-              formatTime(next!.hour, next!.minute),
-              style: text.displayMedium?.copyWith(
-                color: Colors.white,
-                fontWeight: FontWeight.w600,
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(24),
+      child: SunriseBackground(
+        progress: 0.42,
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(20, 20, 20, 28),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                name.isEmpty ? '$hello!' : '$hello, $name!',
+                style: text.titleLarge?.copyWith(color: Colors.white),
               ),
-            ),
-            Text(
-              '${weekdayLong[next!.weekday - 1]} · ${timeUntilText(next!, now)}',
-              style: text.titleMedium?.copyWith(color: Colors.white),
-            ),
-          ],
-          if (now.hour >= 20 || now.hour < 2) ...[
-            const SizedBox(height: 12),
-            Text(
-              '💡 Yarın kolay uyanmak için ekranı bırak ve 7–9 saat uyumayı hedefle.',
-              style: text.bodyMedium?.copyWith(color: Colors.white),
-            ),
-          ],
-        ],
+              const SizedBox(height: 12),
+              if (next == null)
+                Text(
+                  'Kurulu alarm yok',
+                  style: text.headlineSmall?.copyWith(color: Colors.white),
+                )
+              else ...[
+                Text(
+                  formatTime(next!.hour, next!.minute),
+                  style: text.displayMedium?.copyWith(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                Text(
+                  '${weekdayLong[next!.weekday - 1]} · ${timeUntilText(next!, now)}',
+                  style: text.titleMedium?.copyWith(color: Colors.white),
+                ),
+              ],
+              if (now.hour >= 20 || now.hour < 2) ...[
+                const SizedBox(height: 12),
+                Text(
+                  '💡 Yarın kolay uyanmak için ekranı bırak ve 7–9 saat uyumayı hedefle.',
+                  style: text.bodyMedium?.copyWith(color: Colors.white),
+                ),
+              ],
+            ],
+          ),
+        ),
       ),
     );
   }

@@ -19,6 +19,7 @@ import '../models/wake_record.dart';
 import '../services/alarm_scheduler.dart';
 import '../services/services.dart';
 import '../theme.dart';
+import '../widgets/sunrise_background.dart';
 
 enum _Phase { ringing, routine, finished }
 
@@ -488,17 +489,21 @@ class _WakeScreenState extends State<WakeScreen> {
   @override
   Widget build(BuildContext context) {
     final sunrise = switch (_phase) {
+      // Alarm çalarken güneş ufuktan yavaşça doğar.
       _Phase.ringing =>
-        (_now.difference(_phaseStartedAt).inSeconds / 120).clamp(0.0, 0.5),
+        0.12 +
+            (_now.difference(_phaseStartedAt).inSeconds / 120 * 0.38).clamp(
+              0.0,
+              0.38,
+            ),
       _Phase.routine => 0.5 + 0.5 * (_session?.progress ?? 0),
       _Phase.finished => 1.0,
     };
     return PopScope(
       canPop: _phase == _Phase.finished,
       child: Scaffold(
-        body: AnimatedContainer(
-          duration: const Duration(seconds: 1),
-          decoration: BoxDecoration(gradient: dawnGradient(sunrise.toDouble())),
+        body: SunriseBackground(
+          progress: sunrise.toDouble(),
           child: SafeArea(
             child: switch (_phase) {
               _Phase.ringing => _buildRinging(context),
