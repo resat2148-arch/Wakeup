@@ -1,0 +1,52 @@
+name: Android APK
+
+# Her push'ta uygulamayı test edip APK derler ve "Releases" altında
+# indirilebilir hale getirir.
+on:
+  push:
+    branches: [main, claude/wakeup-voice-coach]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - run: flutter pub get
+      - run: flutter analyze
+      - run: flutter test
+
+      - name: APK derle
+        run: |
+          flutter build apk --release
+          cp build/app/outputs/flutter-apk/app-release.apk gunaydin-kocu.apk
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: gunaydin-kocu-apk
+          path: gunaydin-kocu.apk
+
+      - name: Release yayınla
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: build-${{ github.run_number }}
+          name: Günaydın Koçu (derleme ${{ github.run_number }})
+          make_latest: true
+          body: |
+            Android için test sürümü. Telefonda APK dosyasını açıp kur
+            ("Bilinmeyen kaynaklardan yüklemeye izin ver" gerekebilir).
+          files: gunaydin-kocu.apk
