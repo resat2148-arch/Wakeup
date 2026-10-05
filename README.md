@@ -62,11 +62,41 @@ Uygulamadaki her özellik ve her cümle aşağıdaki bulgulara dayanıyor
 - 🎵 İki melodik alarm sesi, yavaş yükselen ses, titreşim
 - 🗣️ Türkçe metin okuma (cihazın kendi TTS motoru, internet gerekmez); konuşma hızı ve tonu ayarlanabilir
 - 👆 Ekranın herhangi bir yerine dokunmak = uyandım
-- 🎙️ İsteğe bağlı sesli komutlar ("tamam", "yaptım", "atla", "tekrar", "bekle", "devam")
+- 🎙️ Eller serbest rutin: "yaptım" dedikçe sonraki adım ("atla", "tekrar", "bekle", "devam", "buradayım" da var)
+- 🎤 Kendi seslendirmen: `assets/voice/` klasörüne konan kayıtlar sentetik sesin yerine çalınır
 - 📝 Düzenlenebilir rutin: sırala, aç/kapat, yeni adım ekle, zamanlayıcı ver
 - 😴 Tekrar uyuma koruması (süre ayarlanabilir)
 - 📊 Seri, tamamlanan sabahlar, ortalama uyanma süresi
 - 🧪 "Şimdi dene": 10 saniye sonra çalan deneme alarmı
+
+## Eller serbest kullanım
+
+Uyanmak için ekrana bir kez dokunursun. Rutin boyunca telefona dokunman gerekmez:
+asistan her adımı anlatır, konuşması biter bitmez dinlemeye geçer ve sen
+**"yaptım"** dedikçe bir sonraki adıma geçer.
+
+| Söyle | Ne olur |
+|---|---|
+| "yaptım", "tamam", "bitti", "sıradaki", "geçelim" | Adım tamamlanır, sonrakine geçilir |
+| "atla", "geç", "pas" | Adım atlanır |
+| "tekrar", "anlamadım" | Adım yeniden anlatılır |
+| "bekle", "dur" / "devam" | Zamanlı adımda süre durur / devam eder |
+| "buradayım" (ya da herhangi bir söz) | Uyku korumasının "hâlâ benimle misin?" sorusuna yanıt |
+
+Ayarlar › "Sesli komutlar" açık ve mikrofon izni verilmiş olmalı.
+
+## Kendi sesinle seslendirme
+
+Uygulamanın söylediği her cümlenin sabit bir kimliği var (`lib/logic/motivation.dart`).
+`assets/voice/<kimlik>.mp3` dosyası varsa o kayıt çalınır, yoksa sentetik ses okur.
+
+1. Metni üret: `dart run tool/export_voice_script.dart`. Çıktı `voiceover/` klasörüne yazılır:
+   `seslendirme_metni.md`, `clips.csv` ve `clips.json`.
+2. Her satırı ayrı dosya olarak kaydet; dosya adı tablodaki gibi olsun (`wake_gentle_1.mp3`).
+3. Dosyaları `assets/voice/` klasörüne koy ve uygulamayı yeniden derle.
+
+Kayıtlar varken motor kaydı olan cümleleri seçer. Saat, adım sayısı ve yazdığın hedef
+gibi değişken bilgiler kayıtlarda yer almaz; bunlar ekranda yazıyla gösterilir.
 
 ## Proje yapısı
 
@@ -83,7 +113,8 @@ lib/
   screens/                     Tanıtım, ana ekran, alarm/rutin düzenleme, ayarlar,
                                wake_screen.dart (çalıyor → rutin → bitti)
 assets/sounds/                 Melodik alarm sesleri (stdlib ile sentezlendi)
-test/                          40 birim + widget testi
+test/                          46 birim + widget testi
+tool/export_voice_script.dart  Seslendirme metnini üretir (voiceover/)
 ```
 
 Kullanılan paketler: [`alarm`](https://pub.dev/packages/alarm),
@@ -95,7 +126,7 @@ Kullanılan paketler: [`alarm`](https://pub.dev/packages/alarm),
 
 ```bash
 flutter pub get
-flutter test          # 40 test
+flutter test          # 46 test
 flutter run           # bağlı cihazda (Android veya iOS)
 ```
 
@@ -116,4 +147,6 @@ flutter run           # bağlı cihazda (Android veya iOS)
 - Alarm çalarken asistanın sesi alarm melodisinin üzerine konuşur: iOS'ta melodi kısılır
   (duck), Android'de ses odağı istenir; gerçek cihazdaki ses dengesi denenmeli.
 - Sesli komutlar cihazın konuşma tanıma servisine bağlıdır; bazı cihazlarda internet gerekebilir.
+  Asistan konuşurken mikrofon kapalıdır: "yaptım"ı konuşma bittikten sonra söyle. Bazı Android
+  telefonlar dinleme her başladığında kısa bir "bip" sesi çıkarır.
 - Uygulama yalnızca Türkçe arayüzle hazırlandı.

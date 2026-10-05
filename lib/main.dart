@@ -31,7 +31,8 @@ Future<void> main() async {
     scheduler: scheduler,
     voice: voice,
     listener: CommandListener(),
-    motivation: MotivationEngine(),
+    // Kayıtlı ses dosyaları varsa motor onları tercih eder.
+    motivation: MotivationEngine(clips: voice.clipIds),
   );
 
   runApp(WakeUpApp(services: services));

@@ -50,9 +50,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
       rate: settings.speechRate,
       pitch: settings.pitch,
     );
-    final engine = MotivationEngine();
     await services.voice.say(
-      engine.wakeCall(
+      services.motivation.wakeCall(
         2,
         MotivationContext(
           now: DateTime.now(),
@@ -195,9 +194,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   if (v) enabled = await Permissions.requestVoicePermissions();
                   await _update(s.copyWith(voiceCommands: enabled));
                 },
-                title: const Text('Sesli komutlar'),
+                title: const Text('Sesli komutlar (eller serbest)'),
                 subtitle: const Text(
-                  '"tamam", "yaptım", "atla", "tekrar", "bekle", "devam"',
+                  'Rutinde telefona dokunmadan ilerle: "yaptım", "atla", "tekrar", "bekle", "devam", "buradayım"',
                 ),
               ),
               _Section('Güvenilirlik'),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../logic/motivation.dart';
 import '../services/permissions.dart';
 import '../services/services.dart';
 import '../theme.dart';
@@ -39,9 +40,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       ),
     );
     await services.voice.say(
-      name.isEmpty
-          ? 'Merhaba! Ben senin sabah koçunum. Her sabah seni uyandırıp güne birlikte başlayacağız.'
-          : 'Merhaba $name! Ben senin sabah koçunum. Her sabah seni uyandırıp güne birlikte başlayacağız.',
+      services.motivation.hello(
+        MotivationContext(now: DateTime.now(), name: name),
+      ),
     );
   }
 
@@ -101,7 +102,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                         onChanged: (v) => setState(() => _voiceCommands = v),
                         title: const Text('Sesli komutlar'),
                         subtitle: const Text(
-                          'Rutin sırasında "tamam", "atla", "tekrar" diyerek ilerle. Mikrofon izni gerekir.',
+                          'Rutinde telefona dokunmadan, "yaptım" diyerek ilerle. Mikrofon izni gerekir.',
                         ),
                       ),
                     ],

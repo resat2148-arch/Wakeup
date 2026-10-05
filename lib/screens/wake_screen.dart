@@ -5,12 +5,12 @@ import 'package:alarm/alarm.dart';
 import 'package:clock/clock.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
 
 import '../logic/motivation.dart';
 import '../logic/routine_session.dart';
 import '../logic/schedule.dart';
+import '../logic/speech.dart';
 import '../logic/voice_commands.dart';
 import '../models/routine_step.dart';
 import '../models/user_settings.dart';
@@ -72,6 +72,7 @@ class _WakeScreenState extends State<WakeScreen> {
 
   bool _listeningEnabled = false;
   DateTime? _lastListenStart;
+  DateTime? _idleAckAt;
 
   DateTime _lastInteraction = clock.now();
   DateTime? _inactivityWarnedAt;
@@ -116,9 +117,7 @@ class _WakeScreenState extends State<WakeScreen> {
 
   Future<void> _prepareListening() async {
     if (!_settings.voiceCommands) return;
-    // Sabah izin penceresi açmamak için yalnızca önceden verilmiş izinle dinle.
-    if (!await Permission.microphone.isGranted) return;
-    final ok = await _s.listener.init();
+    final ok = await _s.listener.prepare();
     if (mounted) setState(() => _listeningEnabled = ok);
   }
 
@@ -135,15 +134,15 @@ class _WakeScreenState extends State<WakeScreen> {
   // Konuşma
   // -----------------------------------------------------------------------
 
-  Future<void> _say(String text) async {
+  Future<void> _say(Speech speech) async {
     final token = ++_speechToken;
     await _s.listener.stop();
     if (!mounted) return;
     setState(() {
       _speaking = true;
-      _caption = text;
+      _caption = speech.text;
     });
-    await _s.voice.say(text);
+    await _s.voice.say(speech);
     if (!mounted || token != _speechToken) return;
     setState(() => _speaking = false);
   }
@@ -196,12 +195,13 @@ class _WakeScreenState extends State<WakeScreen> {
       _checkSleepGuard(now);
     }
 
+    // Konuşma biter bitmez dinlemeye geç; oturum kapanınca hemen yenile.
     if (_listeningEnabled &&
         _phase == _Phase.routine &&
         !_speaking &&
         !_s.listener.isListening &&
         (_lastListenStart == null ||
-            now.difference(_lastListenStart!).inSeconds >= 8)) {
+            now.difference(_lastListenStart!).inMilliseconds >= 900)) {
       _startListening();
     }
   }
@@ -276,7 +276,7 @@ class _WakeScreenState extends State<WakeScreen> {
     await _enterStep(prefix: greeting);
   }
 
-  Future<void> _enterStep({String prefix = ''}) async {
+  Future<void> _enterStep({Speech prefix = Speech.empty}) async {
     final session = _session;
     if (session == null || _phase != _Phase.routine) return;
     final step = session.current;
@@ -297,8 +297,9 @@ class _WakeScreenState extends State<WakeScreen> {
       index: session.index,
       total: session.total,
       voiceCommands: _listeningEnabled,
+      context: _ctx(),
     );
-    await _say(prefix.isEmpty ? intro : '$prefix $intro');
+    await _say(prefix + intro);
     if (!mounted || token != _stepToken || _phase != _Phase.routine) return;
     _onInteraction();
     if (step.timed) setState(() => _stepTimerRunning = true);
@@ -308,7 +309,7 @@ class _WakeScreenState extends State<WakeScreen> {
   bool get _recentlyTransitioned =>
       clock.now().difference(_lastTransitionAt).inMilliseconds < 1500;
 
-  Future<void> _completeStep({String? prefix}) async {
+  Future<void> _completeStep({Speech? prefix}) async {
     final session = _session;
     if (session == null || session.isFinished || _transitioning) return;
     if (_phase != _Phase.routine || _recentlyTransitioned) return;
@@ -322,8 +323,11 @@ class _WakeScreenState extends State<WakeScreen> {
     final remaining = session.total - session.index;
     final praise = _s.motivation.stepDone(_ctx(), remaining: remaining);
     _transitioning = false;
-    final text = [?prefix, if (!session.isFinished) praise].join(' ');
-    await _enterStep(prefix: text);
+    await _enterStep(
+      prefix:
+          (prefix ?? Speech.empty) +
+          (session.isFinished ? Speech.empty : praise),
+    );
   }
 
   Future<void> _skipStep() async {
@@ -338,7 +342,9 @@ class _WakeScreenState extends State<WakeScreen> {
     setState(() => _stepTimerRunning = false);
     _transitioning = false;
     await _enterStep(
-      prefix: session.isFinished ? '' : _s.motivation.stepSkipped(_ctx()),
+      prefix: session.isFinished
+          ? Speech.empty
+          : _s.motivation.stepSkipped(_ctx()),
     );
   }
 
@@ -352,7 +358,8 @@ class _WakeScreenState extends State<WakeScreen> {
         step,
         index: session.index,
         total: session.total,
-        voiceCommands: false,
+        voiceCommands: _listeningEnabled,
+        context: _ctx(),
       ),
     );
   }
@@ -366,23 +373,51 @@ class _WakeScreenState extends State<WakeScreen> {
     _lastListenStart = clock.now();
     _s.voice.markAudioSessionDirty();
     final token = _stepToken;
-    await _s.listener.listenOnce((command) {
-      if (!mounted || token != _stepToken || _phase != _Phase.routine) return;
-      _onInteraction();
-      switch (command) {
-        case VoiceCommand.done:
-          _completeStep();
-        case VoiceCommand.skip:
-          _skipStep();
-        case VoiceCommand.repeat:
-          _repeatStep();
-        case VoiceCommand.pause:
-          if (_stepTimerRunning && !_stepTimerPaused) _togglePause();
-        case VoiceCommand.resume:
-          if (_stepTimerRunning && _stepTimerPaused) _togglePause();
-      }
-    });
+    await _s.listener.listen(
+      (command) => _onVoiceCommand(command, token),
+      onSpeech: _onSpeechHeard,
+    );
     if (mounted) setState(() {});
+  }
+
+  /// Duyulan her söz kullanıcının uyanık olduğunu gösterir. Uyku koruması
+  /// "hâlâ benimle misin?" diye sorduysa bu bir yanıttır; adım geçilmez.
+  void _onSpeechHeard() {
+    if (!mounted || _phase != _Phase.routine) return;
+    if (_inactivityWarnedAt != null) {
+      _onInteraction();
+      _idleAckAt = clock.now();
+      _say(_s.motivation.idleAck(_ctx()));
+    } else {
+      _lastInteraction = clock.now();
+    }
+  }
+
+  void _onVoiceCommand(VoiceCommand command, int token) {
+    if (!mounted || token != _stepToken || _phase != _Phase.routine) return;
+    final ack = _idleAckAt;
+    if (ack != null && clock.now().difference(ack).inSeconds < 3) return;
+    _onInteraction();
+    switch (command) {
+      case VoiceCommand.done:
+        _completeStep();
+      case VoiceCommand.skip:
+        _skipStep();
+      case VoiceCommand.repeat:
+        _repeatStep();
+      case VoiceCommand.pause:
+        if (_stepTimerRunning && !_stepTimerPaused) {
+          _togglePause();
+          _say(_s.motivation.pauseAck());
+        }
+      case VoiceCommand.resume:
+        if (_stepTimerRunning && _stepTimerPaused) {
+          _togglePause();
+          _say(_s.motivation.resumeAck());
+        }
+      case VoiceCommand.here:
+        _say(_s.motivation.idleAck(_ctx()));
+    }
   }
 
   Future<void> _reRing() async {
@@ -425,7 +460,7 @@ class _WakeScreenState extends State<WakeScreen> {
     if (mounted) Navigator.of(context).pop();
   }
 
-  Future<void> _finish({String prefix = ''}) async {
+  Future<void> _finish({Speech prefix = Speech.empty}) async {
     if (_phase == _Phase.finished) return;
     _stepToken++;
     await _s.listener.stop();
@@ -452,7 +487,7 @@ class _WakeScreenState extends State<WakeScreen> {
       done: session?.doneCount ?? 0,
       total: session?.total ?? 0,
     );
-    await _say(prefix.isEmpty ? finale : '$prefix $finale');
+    await _say(prefix + finale);
   }
 
   Future<void> _confirmEndRoutine() async {
@@ -669,6 +704,13 @@ class _WakeScreenState extends State<WakeScreen> {
           ],
           const Spacer(),
           _Caption(text: _caption, speaking: _speaking),
+          if (_listeningEnabled) ...[
+            const SizedBox(height: 10),
+            _ListeningHint(
+              listening: _s.listener.isListening && !_speaking,
+              paused: _stepTimerPaused,
+            ),
+          ],
           const SizedBox(height: 16),
           FilledButton.icon(
             style: FilledButton.styleFrom(
@@ -838,6 +880,51 @@ class _PulsingTapHintState extends State<_PulsingTapHint>
           'Uyandıysan ekrana dokun',
           style: Theme.of(context).textTheme.titleLarge
               ?.copyWith(color: Colors.white, fontWeight: FontWeight.w600),
+        ),
+      ],
+    );
+  }
+}
+
+/// Telefona dokunmadan ilerlemek için: mikrofonun dinlediğini gösterir.
+class _ListeningHint extends StatelessWidget {
+  const _ListeningHint({required this.listening, required this.paused});
+
+  final bool listening;
+  final bool paused;
+
+  @override
+  Widget build(BuildContext context) {
+    final text = paused
+        ? '“Devam” de, süre kaldığı yerden devam etsin'
+        : listening
+        ? 'Dinliyorum… Bitince “yaptım” de'
+        : 'Konuşmam bitince “yaptım” diyebilirsin';
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        AnimatedContainer(
+          duration: const Duration(milliseconds: 300),
+          padding: const EdgeInsets.all(6),
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            color: listening ? sunriseGold : Colors.white24,
+          ),
+          child: Icon(
+            listening ? Icons.mic : Icons.mic_none,
+            size: 18,
+            color: listening ? nightIndigo : Colors.white,
+          ),
+        ),
+        const SizedBox(width: 10),
+        Flexible(
+          child: Text(
+            text,
+            style: const TextStyle(
+              color: Colors.white,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
         ),
       ],
     );

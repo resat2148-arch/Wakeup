@@ -58,7 +58,9 @@ void main() {
 
     test('atla, tekrar, bekle, devam', () {
       expect(parseVoiceCommand('bunu atla'), VoiceCommand.skip);
-      expect(parseVoiceCommand('sonraki'), VoiceCommand.skip);
+      expect(parseVoiceCommand('geç'), VoiceCommand.skip);
+      expect(parseVoiceCommand('sıradaki'), VoiceCommand.done);
+      expect(parseVoiceCommand('buradayım'), VoiceCommand.here);
       expect(parseVoiceCommand('Tekrar söyler misin'), VoiceCommand.repeat);
       expect(parseVoiceCommand('bir dakika'), VoiceCommand.pause);
       expect(parseVoiceCommand('devam et'), VoiceCommand.resume);

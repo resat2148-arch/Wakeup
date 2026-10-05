@@ -45,6 +45,7 @@ Future<(Services, FakeVoice, FakeScheduler)> _setUp({
     voiceCommands: false,
     maxSnoozes: 1,
   ),
+  FakeListener? listener,
 }) async {
   SharedPreferences.setMockInitialValues({});
   final storage = await Storage.open();
@@ -58,7 +59,7 @@ Future<(Services, FakeVoice, FakeScheduler)> _setUp({
     state: state,
     scheduler: scheduler,
     voice: voice,
-    listener: FakeListener(),
+    listener: listener ?? FakeListener(),
     motivation: MotivationEngine(),
   );
   return (services, voice, scheduler);
@@ -76,6 +77,12 @@ AlarmSettings _ringing() => AlarmSettings(
   notificationSettings: const NotificationSettings(title: 't', body: 'b'),
 );
 
+/// Uyku korumasının sorduğu cümlelerden herhangi biri.
+final _idleQuestion = RegExp(
+  'benimle misin|sessizleştin|geri dönmek yok',
+  caseSensitive: false,
+);
+
 Future<void> _seconds(WidgetTester tester, int n) async {
   for (var i = 0; i < n; i++) {
     await tester.pump(const Duration(seconds: 1));
@@ -83,6 +90,110 @@ Future<void> _seconds(WidgetTester tester, int n) async {
 }
 
 void main() {
+  testWidgets('eller serbest: "yaptım" dedikçe rutin ilerler ve biter', (
+    tester,
+  ) async {
+    final mic = FakeListener(enabled: true);
+    final (services, voice, _) =
+        await tester.runAsync(
+          () => _setUp(
+            settings: const UserSettings(
+              name: 'Reşat',
+              onboarded: true,
+              voiceCommands: true,
+              sleepBackGuardSeconds: 60,
+            ),
+            listener: mic,
+          ),
+        ) ??
+        (throw StateError('kurulum'));
+
+    await tester.pumpWidget(_app(services, _ringing()));
+    await tester.pump();
+    // Uyanmak için ekrana dokunulur (alarm sesi konuşmayı bastırır).
+    await tester.tapAt(const Offset(200, 200));
+    await tester.pump();
+    await tester.pump();
+    expect(find.text('Perdeyi aç'), findsOneWidget);
+    expect(
+      voice.spoken.last,
+      contains('"yaptım" de'),
+      reason: 'ilk adımda eller serbest ipucu verilmeli',
+    );
+
+    // Konuşma bitince mikrofon hemen açılır.
+    await _seconds(tester, 1);
+    expect(mic.isListening, isTrue);
+    expect(find.textContaining('Dinliyorum'), findsOneWidget);
+
+    expect(mic.hear('yaptım'), isTrue);
+    await tester.pump();
+    expect(find.text('Su iç'), findsOneWidget);
+
+    // İlgisiz konuşma adımı geçmez.
+    await _seconds(tester, 2);
+    expect(mic.hear('bugün hava güzel'), isTrue);
+    await tester.pump();
+    expect(find.text('Su iç'), findsOneWidget);
+
+    expect(mic.hear('Tamam, bitti.'), isTrue);
+    await tester.pump();
+    expect(find.text('Nefes'), findsOneWidget);
+
+    // Zamanlı adımda "bekle" süreyi durdurur, "devam" sürdürür.
+    await _seconds(tester, 2);
+    expect(mic.hear('bekle'), isTrue);
+    await tester.pump();
+    expect(voice.spoken.last, contains('bekliyorum'));
+    await _seconds(tester, 10);
+    expect(find.text('Güne hazırsın!'), findsNothing);
+    expect(mic.hear('devam'), isTrue);
+    await tester.pump();
+    expect(voice.spoken.last, contains('Devam ediyoruz'));
+
+    await _seconds(tester, 2);
+    expect(mic.hear('yaptım'), isTrue);
+    await tester.pump();
+    expect(find.text('Güne hazırsın!'), findsOneWidget);
+    expect(services.state.history.single.stepsDone, 3);
+  });
+
+  testWidgets('uyku korumasına sesle "buradayım" yanıtı adımı geçmez', (
+    tester,
+  ) async {
+    final mic = FakeListener(enabled: true);
+    final (services, voice, scheduler) =
+        await tester.runAsync(
+          () => _setUp(
+            settings: const UserSettings(
+              onboarded: true,
+              voiceCommands: true,
+              sleepBackGuardSeconds: 60,
+            ),
+            listener: mic,
+          ),
+        ) ??
+        (throw StateError('kurulum'));
+
+    await tester.pumpWidget(_app(services, _ringing()));
+    await tester.pump();
+    await tester.tapAt(const Offset(200, 200));
+    await tester.pump();
+    await tester.pump();
+
+    await _seconds(tester, 62);
+    expect(voice.spoken.last, contains(_idleQuestion));
+    await _seconds(tester, 2);
+    // "Evet" normalde "yaptım" sayılır; burada yalnızca uyanıklık yanıtıdır.
+    expect(mic.hear('evet'), isTrue);
+    await tester.pump();
+    expect(voice.spoken.last, contains('buradasın'));
+    expect(find.text('Perdeyi aç'), findsOneWidget);
+
+    await _seconds(tester, 40);
+    expect(scheduler.calls, isNot(contains('reRing:7')));
+  });
+
   testWidgets('alarm konuşur, dokunuşla uyanılır, rutin tamamlanır', (
     tester,
   ) async {
@@ -160,10 +271,7 @@ void main() {
       expect(find.text('Perdeyi aç'), findsOneWidget);
 
       await _seconds(tester, 61);
-      expect(
-        voice.spoken.last,
-        contains('dokun'),
-      ); // "hâlâ benimle misin?" sorusu
+      expect(voice.spoken.last, contains(_idleQuestion));
       expect(scheduler.calls, isNot(contains('reRing:7')));
 
       await _seconds(tester, 31);

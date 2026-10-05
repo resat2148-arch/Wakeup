@@ -1,0 +1,374 @@
+[
+  {
+    "title": "Alarm çalarken – nazik",
+    "note": "İlk 45 saniye. Yumuşak, sakin, fısıltıya yakın.",
+    "lines": [
+      {
+        "id": "wake_gentle_1",
+        "text": "Günaydın [adın]. Yavaş yavaş gözlerini aç, uyanma vakti geldi. Uyandığında ekrana dokun."
+      },
+      {
+        "id": "wake_gentle_2",
+        "text": "[adın], yeni bir gün başladı. Derin bir nefes al, gözlerini aç ve ekrana dokun."
+      },
+      {
+        "id": "wake_gentle_3",
+        "text": "Günaydın [adın]. Hadi, yavaş yavaş uyanıyoruz. Hazır olunca ekrana dokun."
+      },
+      {
+        "id": "wake_gentle_4",
+        "text": "[adın], uyanma zamanı. Önce kocaman bir esne, sonra ekrana dokun."
+      },
+      {
+        "id": "wake_gentle_5",
+        "text": "Sabah oldu [adın]. Yeni bir gün seni bekliyor. Gözlerini aç ve ekrana dokun."
+      }
+    ]
+  },
+  {
+    "title": "Alarm çalarken – motive edici",
+    "note": "45 saniye – 2 dakika arası. Sıcak ve ikna edici.",
+    "lines": [
+      {
+        "id": "wake_reason_1",
+        "text": "[adın], unutma: bugün seni bekleyen güzel bir şey var. Kalkmak için harika bir sebep! Ekrana dokun."
+      },
+      {
+        "id": "wake_reason_2",
+        "text": "Dün akşam kendine bir söz verdin. Hadi o sözü tutalım [adın]. Ekrana dokun."
+      },
+      {
+        "id": "wake_streak_1",
+        "text": "[adın], günlerdir zinciri kırmadın. Bugün de kırmayalım! Ekrana dokun."
+      },
+      {
+        "id": "wake_inertia",
+        "text": "Şu an hissettiğin ağırlık tamamen normal, adı uyku ataleti. Ayağa kalktığın an hızla geçecek. Ekrana dokun."
+      },
+      {
+        "id": "wake_snooze_science",
+        "text": "Bilim diyor ki: ertelemek seni daha da sersemletir, çünkü uyku döngüsünü yeniden başlatır. En kolay yol şimdi kalkmak. Ekrana dokun."
+      },
+      {
+        "id": "wake_future_self",
+        "text": "Yarım saat sonraki sen, şimdi kalktığın için sana teşekkür edecek [adın]. Ekrana dokun."
+      },
+      {
+        "id": "wake_light",
+        "text": "Perdeyi açtığın an ışık beynine \"gün başladı\" diyecek ve uyku hormonun azalacak. Önce ekrana dokun."
+      },
+      {
+        "id": "wake_first_step",
+        "text": "Bugün sadece ilk adımı at: ekrana dokun. Gerisini birlikte yapacağız."
+      },
+      {
+        "id": "wake_quiet_hours",
+        "text": "[adın], sabahın bu sakin saatleri senin. Onları kaçırma, ekrana dokun."
+      }
+    ]
+  },
+  {
+    "title": "Alarm çalarken – enerjik",
+    "note": "2 dakikadan sonra. Yüksek enerji, coşkulu, gülümseyerek.",
+    "lines": [
+      {
+        "id": "wake_countdown",
+        "text": "[adın]! Beşten geriye sayıyorum: beş, dört, üç, iki, bir! Kalk ve ekrana dokun!"
+      },
+      {
+        "id": "wake_blanket",
+        "text": "Hadi [adın]! Battaniyeyi at, ayaklarını yere bas! Gün seni bekliyor, ekrana dokun!"
+      },
+      {
+        "id": "wake_mission",
+        "text": "[adın], bu bir uyandırma görevi! Ekrana dokunana kadar susmayacağım!"
+      },
+      {
+        "id": "wake_reason_3",
+        "text": "Seni bekleyen şeyi kaçırmak istemezsin [adın]. Kalk, kalk, kalk! Ekrana dokun!"
+      },
+      {
+        "id": "wake_streak_2",
+        "text": "[adın], serini bugün bozmak yok! Hemen ekrana dokun!"
+      },
+      {
+        "id": "wake_promise",
+        "text": "Sen sözünü tutan birisin [adın]. Bunu şimdi kanıtla: gözlerini aç ve ekrana dokun!"
+      }
+    ]
+  },
+  {
+    "title": "Uyandığında",
+    "note": "Ekrana dokunulunca sırayla: karşılama + (hızlı uyandıysa) övgü + günün cümlesi + (hedef varsa) hatırlatma + rutin başlangıcı.",
+    "lines": [
+      {
+        "id": "awake_1",
+        "text": "Harika, uyandın! Günaydın [adın]."
+      },
+      {
+        "id": "awake_2",
+        "text": "İşte bu! Günaydın [adın], seni görmek güzel."
+      },
+      {
+        "id": "awake_3",
+        "text": "Süpersin [adın]! İlk ve en zor adımı attın."
+      },
+      {
+        "id": "awake_fast",
+        "text": "Çok hızlı uyandın, bu harika bir başlangıç."
+      },
+      {
+        "id": "day_1",
+        "text": "Bugün pazartesi. Yeni bir hafta, yeni bir başlangıç. Haftaya güçlü gir!"
+      },
+      {
+        "id": "day_2",
+        "text": "Bugün salı. Dünkü ivmeyi koru, harika gidiyorsun."
+      },
+      {
+        "id": "day_3",
+        "text": "Bugün çarşamba. Haftanın ortasındayız, ivmeni koru."
+      },
+      {
+        "id": "day_4",
+        "text": "Bugün perşembe. Hafta sonuna az kaldı, güçlü devam!"
+      },
+      {
+        "id": "day_5",
+        "text": "Cuma geldi! Haftanın son düzlüğü, bitir şunu!"
+      },
+      {
+        "id": "day_6",
+        "text": "Bugün cumartesi. Hafta sonu erken kalkmak, günün tamamını sana hediye eder."
+      },
+      {
+        "id": "day_7",
+        "text": "Bugün pazar. Sakin ama uyanık bir gün; erken kalkan günün tadını çıkarır."
+      },
+      {
+        "id": "awake_reason",
+        "text": "Ekrandaki hedefini unutma; bugün seni o bekliyor."
+      },
+      {
+        "id": "routine_start",
+        "text": "Şimdi sabah rutinimize başlıyoruz. Telefonda gezinmek yok, her adımda ben yanındayım."
+      },
+      {
+        "id": "welcome_back",
+        "text": "Tekrar hoş geldin [adın]! Bu sefer uyanık kalıyoruz. Kaldığımız yerden devam ediyoruz."
+      }
+    ]
+  },
+  {
+    "title": "Rutin adımları",
+    "note": "Her adım için bir kayıt. Net ve yönlendirici; adımlar arasında kısa nefes payı bırak.",
+    "lines": [
+      {
+        "id": "step_sit_up",
+        "text": "Doğrul ve ayaklarını yere bas. Önce yatakta doğrul, ayaklarını yere bas. Telefonu bırakma, benimle kal. Dik oturmak kan akışını hızlandırır ve tekrar uykuya dalmayı zorlaştırır."
+      },
+      {
+        "id": "step_light",
+        "text": "Perdeyi aç, ışığa çık. Şimdi kalk, perdeyi aç ya da ışığı yak. Mümkünse cama yaklaş ve gün ışığını gözlerine al. Sabah ışığı uyku hormonu melatonini baskılar ve biyolojik saatini güne ayarlar."
+      },
+      {
+        "id": "step_water",
+        "text": "Bir bardak su iç. Mutfağa ya da lavaboya git ve bir bardak su iç. Gece boyunca vücudun susuz kaldı. Su, zihinsel bulanıklığı azaltır."
+      },
+      {
+        "id": "step_cold_water",
+        "text": "Yüzünü soğuk suyla yıka. Yüzüne bol soğuk su çarp. Birkaç kez, cesurca! Soğuk su dalış refleksini tetikler ve uyanıklık sağlayan noradrenalini artırır."
+      },
+      {
+        "id": "step_move",
+        "text": "Bir dakika hareket. Bir dakika boyunca hareket ediyoruz: kollarını açıp esne, sonra yavaş yavaş squat yap. Ben süreyi tutuyorum. Kısa egzersiz kalp atışını ve vücut ısısını artırarak sersemliği hızla atar."
+      },
+      {
+        "id": "step_bed",
+        "text": "Yatağını topla. Şimdi yatağını topla. Böylece geri dönme cazibesi de kalmaz. Günün ilk küçük başarısı, sonraki adımlar için motivasyon yaratır."
+      },
+      {
+        "id": "step_breathe",
+        "text": "Derin nefes. Otuz saniye derin nefes alıyoruz. Burnundan dört saniye al, dört saniye tut, ağzından yavaşça ver. Kontrollü nefes zihni berraklaştırır ve güne sakin başlamanı sağlar."
+      },
+      {
+        "id": "step_intention",
+        "text": "Günün niyeti. Son olarak: bugün yapmak istediğin en önemli tek şey ne? Bunu kendine yüksek sesle söyle. Net bir niyet belirlemek, günün geri kalanında odaklanmayı kolaylaştırır."
+      },
+      {
+        "id": "hint_voice",
+        "text": "Bitirdiğinde bana \"yaptım\" de, bir sonraki adıma geçelim. Telefona dokunmana gerek yok."
+      },
+      {
+        "id": "hint_touch",
+        "text": "Bitirdiğinde ekrandaki \"Yaptım\" düğmesine dokun."
+      }
+    ]
+  },
+  {
+    "title": "Adım geçişleri",
+    "note": "Kısa ve neşeli. Övgüden sonra \"kalan adım\" cümlesi eklenebilir.",
+    "lines": [
+      {
+        "id": "praise_1",
+        "text": "Harika!"
+      },
+      {
+        "id": "praise_2",
+        "text": "Çok iyi gidiyorsun [adın]!"
+      },
+      {
+        "id": "praise_3",
+        "text": "Bir adım daha tamam. Böyle devam!"
+      },
+      {
+        "id": "praise_4",
+        "text": "Mükemmel! Her adım seni biraz daha uyandırıyor."
+      },
+      {
+        "id": "praise_5",
+        "text": "Bravo! Küçük kazanımlar büyük günler yaratır."
+      },
+      {
+        "id": "praise_6",
+        "text": "İşte bu! Şimdi kendini daha zinde hissediyorsundur."
+      },
+      {
+        "id": "left_1",
+        "text": "Sadece bir adım kaldı."
+      },
+      {
+        "id": "left_2",
+        "text": "İki adım kaldı."
+      },
+      {
+        "id": "left_3",
+        "text": "Üç adım kaldı."
+      },
+      {
+        "id": "skip_1",
+        "text": "Sorun değil, bir sonrakine geçelim."
+      },
+      {
+        "id": "skip_2",
+        "text": "Tamam, bunu atlıyoruz. Devam!"
+      },
+      {
+        "id": "skip_3",
+        "text": "Olsun, önemli olan devam etmek."
+      }
+    ]
+  },
+  {
+    "title": "Zamanlayıcı ve sesli komut yanıtları",
+    "note": "Hareket ve nefes adımlarında; çok kısa.",
+    "lines": [
+      {
+        "id": "timer_half",
+        "text": "Yarıladık, devam!"
+      },
+      {
+        "id": "timer_10",
+        "text": "Son on saniye!"
+      },
+      {
+        "id": "timer_done",
+        "text": "Süre doldu, harika."
+      },
+      {
+        "id": "pause_ack",
+        "text": "Tamam, bekliyorum. Hazır olunca \"devam\" de."
+      },
+      {
+        "id": "resume_ack",
+        "text": "Devam ediyoruz!"
+      }
+    ]
+  },
+  {
+    "title": "Tekrar uyuma koruması ve erteleme",
+    "note": "Uzun süre ses gelmezse. Önce şefkatli, alarm uyarısı kararlı.",
+    "lines": [
+      {
+        "id": "idle_1",
+        "text": "[adın], hâlâ benimle misin? Bir şey söyle ya da ekrana dokun."
+      },
+      {
+        "id": "idle_2",
+        "text": "[adın], sessizleştin. Tekrar uyumadın, değil mi? \"Buradayım\" de."
+      },
+      {
+        "id": "idle_3",
+        "text": "Hey [adın]! Yatağa geri dönmek yok. Sesini duyalım, \"buradayım\" de."
+      },
+      {
+        "id": "idle_ack",
+        "text": "Harika, buradasın. Devam ediyoruz."
+      },
+      {
+        "id": "rering",
+        "text": "[adın], tekrar uyuduğunu düşünüyorum. Alarmı yeniden çalıyorum!"
+      },
+      {
+        "id": "snooze_more",
+        "text": "Tamam [adın], alarmı biraz erteledim. Ama bil ki ertelemek çoğu zaman daha sersem uyandırır. Bu sürede uyumaya çalışma, gözlerini açık tut ve esne. Bir erteleme hakkın daha var."
+      },
+      {
+        "id": "snooze_last",
+        "text": "Tamam [adın], alarmı biraz erteledim. Ama bil ki ertelemek çoğu zaman daha sersem uyandırır. Bu sürede uyumaya çalışma, gözlerini açık tut ve esne. Bu son ertelemeydi, bir dahaki sefere kalkıyoruz."
+      }
+    ]
+  },
+  {
+    "title": "Kapanış",
+    "note": "Rutin bitince sırayla: sonuç + seri + kapanış cümlesi. Kutlama tonu.",
+    "lines": [
+      {
+        "id": "final_all",
+        "text": "Tebrikler [adın]! Sabah rutininin bütün adımlarını tamamladın."
+      },
+      {
+        "id": "final_some",
+        "text": "Tebrikler [adın]! Adımların bir kısmını tamamladın. Yarın hepsini yaparız."
+      },
+      {
+        "id": "final_none",
+        "text": "Bugün adımları atladın ama uyandın, bu da bir başlangıç [adın]."
+      },
+      {
+        "id": "streak_on",
+        "text": "Serin devam ediyor, zinciri kırmıyorsun!"
+      },
+      {
+        "id": "streak_new",
+        "text": "Yeni bir seri başladı. Yarın ikinci halkayı ekleyelim."
+      },
+      {
+        "id": "closer_1",
+        "text": "Güne kazanan olarak başladın. Harika bir gün geçir [adın]!"
+      },
+      {
+        "id": "closer_2",
+        "text": "Bugünün ilk zaferi senin. Şimdi gün senin [adın]!"
+      },
+      {
+        "id": "closer_3",
+        "text": "Yarın sabah yine buradayım. Harika bir gün dilerim [adın]!"
+      },
+      {
+        "id": "closer_4",
+        "text": "Kendinle gurur duy [adın]. Bu enerjiyle güne başla!"
+      }
+    ]
+  },
+  {
+    "title": "Tanışma",
+    "note": "Uygulama ilk açıldığında bir kez.",
+    "lines": [
+      {
+        "id": "hello",
+        "text": "Merhaba [adın]! Ben senin sabah koçunum. Her sabah seni uyandıracağım ve güne birlikte başlayacağız."
+      }
+    ]
+  }
+]

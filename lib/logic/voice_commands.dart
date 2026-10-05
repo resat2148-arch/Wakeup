@@ -1,5 +1,14 @@
 /// Rutin sırasında kullanıcının sesle verebileceği komutlar.
-enum VoiceCommand { done, skip, repeat, pause, resume }
+enum VoiceCommand {
+  done,
+  skip,
+  repeat,
+  pause,
+  resume,
+
+  /// "Buradayım": uyku korumasının sorusuna yanıt; adımı geçmez.
+  here,
+}
 
 /// Türkçe büyük/küçük harf dönüşümünü doğru yapan sadeleştirme.
 String normalizeTurkish(String input) {
@@ -24,7 +33,8 @@ String normalizeTurkish(String input) {
 
 const _keywords = <VoiceCommand, List<String>>{
   // Daha belirgin komutlar önce denenir.
-  VoiceCommand.skip: ['atla', 'geç', 'sonraki', 'pas', 'istemiyorum'],
+  VoiceCommand.here: ['buradayım', 'uyanığım', 'uyanıkım', 'uyumadım'],
+  VoiceCommand.skip: ['atla', 'atlayalım', 'geç', 'pas', 'istemiyorum'],
   VoiceCommand.repeat: [
     'tekrar',
     'tekrarla',
@@ -37,6 +47,11 @@ const _keywords = <VoiceCommand, List<String>>{
   VoiceCommand.done: [
     'tamam',
     'tamamdır',
+    'tamamlandı',
+    'sonraki',
+    'sıradaki',
+    'geçelim',
+    'yapıldı',
     'tamamladım',
     'yaptım',
     'yapdım',
