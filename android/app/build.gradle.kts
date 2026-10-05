@@ -6,7 +6,8 @@ plugins {
 
 android {
     namespace = "com.wakeupcoach.wakeup_coach"
-    compileSdk = flutter.compileSdkVersion
+    // permission_handler_android 14.x, SDK 37 ile derlenmeyi gerektiriyor.
+    compileSdk = 37
     ndkVersion = flutter.ndkVersion
 
     compileOptions {
